@@ -16,40 +16,31 @@
 
 var listqueue = 0;
 var arrayVKB = [];
-const VKBurl = 'https://api.gosvon.net/marking2';
 const VKBcolor = '255,50,50';
 
 listqueue++;
-getlist(filllist, 0, VKBurl);
+chrome.runtime.sendMessage({"type": "get_bot_list"})
 waitforlists();
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.type == 'bot_list') {
-      filllist(0, request.message, 200, 'no'); // TODO: this
+      filllist(request.message, request.error);
     }
   }
 );
 
-function filllist(numArr, response, code, url) {
-  if (code !== 200) {
-    console.log("[GosVon Marking for VK] List load error. URL " + url + " Code " + code);
+function filllist(response, error) {
+  if (error) {
+    console.log("[GosVon Marking for VK] List load error " + error);
   } else {
-    switch (numArr) {
-      case 0:
-        arrayVKB = response.match(/[^\r\n|]+/g);
-        for (var i = 1; i < arrayVKB.length; i++) {
-          if (arrayVKB[i] === '-') {
-            arrayVKB[i] = 'id' + arrayVKB[i-1];
-          }
-        }
-        var dbname = "VKB-db";
+    arrayVKB = response.match(/[^\r\n|]+/g);
+    for (var i = 1; i < arrayVKB.length; i++) {
+      if (arrayVKB[i] === '-') {
+        arrayVKB[i] = 'id' + arrayVKB[i-1];
+      }
     }
-    if (code === 200) {
-      console.log("[GosVon Marking for VK] " + dbname + " loaded. Code " + code);
-    } else {
-      console.log("[GosVon Marking for VK] " + dbname + " load error. Code " + code);
-    }
+    var dbname = "VKB-db";
   }
   listqueue--;
 }
@@ -197,28 +188,6 @@ function foundProfileM(jNode) {
         $(jNode).append("Найдено в базе: #" + ((foundID-1)/2+1) + " (" + arrayVKB[foundID] + ")<br>");
         $(jNode).append("<i><a target='_blank' href='https://gosvon.net/?usr=" + userID + "'>Комментарии</a> <a target='_blank' href='https://gosvon.net/photo.php?id=" + userID + "'>Карточка</a></i>");
     }
-  }
-}
-
-function getlist(callback, numArr, url) {
-  if (typeof GM_xmlhttpRequest !== 'undefined') {
-    GM_xmlhttpRequest({
-      method: "GET",
-      url: url,
-      onload: function(response) {
-        callback(numArr, response.responseText, response.status, url);
-      }
-    });
-  } else if (typeof GM !== 'undefined') {
-    GM.xmlHttpRequest({
-      method: "GET",
-      url: url,
-      onload: function(response) {
-        callback(numArr, response.responseText, response.status, url);
-      }
-    });
-  } else {
-    console.log("[GosVon Marking for VK] Unable to get supported cross-origin XMLHttpRequest function.");
   }
 }
 
