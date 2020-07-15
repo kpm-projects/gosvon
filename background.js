@@ -13,6 +13,6 @@ chrome.runtime.onMessage.addListener(function(message, sender, callback) {
       }
     }
 
-    fetch('https://apis.gosvon.net/marking2').then(response => process_response(response));
+    fetch('https://api.gosvon.net/marking2').then(response => process_response(response));
   })
 })
