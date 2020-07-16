@@ -1,2 +1,8 @@
-# gosvon
-Chromium plugin for "gosvon" service
+# GosVon плагин для подсветки ботов
+Chromium плагин для подсветки аккаунтов ботов ВК.
+База ботов взята с проекта gosvon.net. Создан при поддержке проекта
+Гражданское Общество.  
+Репозиторий https://github.com/itcivsocTEAM/gosvon
+
+Пример работы плагина (комментарии ботов подсвечены красным)
+!example.png!
