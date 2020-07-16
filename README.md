@@ -5,4 +5,4 @@ Chromium плагин для подсветки аккаунтов ботов В
 Репозиторий https://github.com/itcivsocTEAM/gosvon
 
 Пример работы плагина (комментарии ботов подсвечены красным)  
-!https://raw.githubusercontent.com/itcivsocTEAM/gosvon/master/example.png!
+![Screenshot](example.png)
