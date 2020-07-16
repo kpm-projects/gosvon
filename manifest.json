@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "GosVon Подсветка ботов",
-  "description": "Плагин который подсвечивает аккаунты ботов ВК. База ботов взята с проекта gosvon.net. Создан при поддержке проекта Гражданское Общество. Репозиторий https://github.com/itcivsocTEAM/gosvon",
+  "description": "Опознаёт аккаунты ботов ВК. Репозиторий https://github.com/itcivsocTEAM/gosvon. При поддержке проекта Гражданское Общество.",
   "version": "1.0.0",
   "content_scripts": [
     {
