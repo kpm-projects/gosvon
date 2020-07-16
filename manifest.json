@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "GosVon Подсветка ботов",
-  "description": "Опознаёт аккаунты ботов ВК. Репозиторий https://github.com/itcivsocTEAM/gosvon. При поддержке проекта Гражданское Общество.",
-  "version": "1.0.0",
+  "name": "ГосВонь — Подсветка ботов",
+  "description": "Расширение, подсвечивающее аккаунты ботов ВКонтакте.",
+  "version": "1.0.1",
   "content_scripts": [
     {
       "matches": ["*://vk.com/*"],
