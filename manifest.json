@@ -5,7 +5,7 @@
   "version": "1.0.1",
   "content_scripts": [
     {
-      "matches": ["*://vk.com/*"],
+      "matches": ["*://vk.com/*", "*://m.vk.com/*"],
       "js": ["content.js"]
     }
   ],

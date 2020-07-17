@@ -12,34 +12,17 @@
 // @run-at       document-start
 // ==/UserScript==
 
-// var listqueue = 0;
-var arrayVKB = [];
+var arrayVKB = []; 
 var timers = {};
 const VKBcolor = '255,50,50';
-const expireTime = 3600 * 1000; // one hour
+const expireTime = 3600 * 1000; // one hour to expire botlist cache
 const apiUrl = 'https://api.gosvon.net/marking2';
 
+// Start!
 getList(function(items) {
   arrayVKB = items;
   findAndMark();  
 });
-
-// listqueue++;
-// waitforlists();
-
-// chrome.runtime.onMessage.addListener(
-//   function(request, sender, sendResponse) {
-//     if(request.type == 'bot_list') {
-//       if(request.error) {
-//         console.log("[GosVon Marking for VK] List load error " + request.error);
-//       } else {
-//         arrayVKB = parseResponse(request.message)
-//         storeData(arrayVKB)
-//       }
-//       // filllist(request.message, request.error);
-//     }
-//   }
-// );
 
 // Save botlist to local storage
 function storeData(items) {
@@ -101,43 +84,14 @@ function checkID(id) {
   return foundID;
 }
 
-// function filllist(response, error) {
-//   if (error) {
-//     console.log("[GosVon Marking for VK] List load error " + error);
-//   } else {
-//     arrayVKB = response.match(/[^\r\n|]+/g);
-//     for (var i = 1; i < arrayVKB.length; i++) {
-//       if (arrayVKB[i] === '-') {
-//         arrayVKB[i] = 'id' + arrayVKB[i-1];
-//       }
-//     }
-//     var dbname = "VKB-db";
-//   }
-
-//   listqueue--;
-// }
-
 function findAndMark() {
-  waitForKeyElements('a.author', foundAuthor);
-  waitForKeyElements('a.ReplyItem__name', foundAuthorCM);
-  waitForKeyElements('a.pi_author', foundAuthorPM);
-  waitForKeyElements('div.fans_fan_row', foundFan);
-  waitForKeyElements('div.page_avatar', foundProfile);
-  waitForKeyElements('div.pp_cont', foundProfileM);
+  waitForKeyElements('a.author', foundAuthor); // Comments and post on regular VK
+  waitForKeyElements('a.ReplyItem__name', foundAuthorCM); // Comments on mobile VK
+  waitForKeyElements('a.pi_author', foundAuthorPM);       // Posts on mobile VK
+  waitForKeyElements('div.fans_fan_row', foundFan);       // Likes page
+  waitForKeyElements('div.page_avatar', foundProfile); // Regular profile page
+  waitForKeyElements('div.pp_cont', foundProfileM);    // Mobile profile page
 }
-
-// function waitforlists() {
-//   if (listqueue === 0) {
-//     waitForKeyElements('a.author', foundAuthor);
-//     waitForKeyElements('a.ReplyItem__name', foundAuthorCM);
-//     waitForKeyElements('a.pi_author', foundAuthorPM);
-//     waitForKeyElements('div.fans_fan_row', foundFan);
-//     waitForKeyElements('div.page_avatar', foundProfile);
-//     waitForKeyElements('div.pp_cont', foundProfileM);
-//   } else {
-//     setTimeout(waitforlists, 500);
-//   }
-// }
 
 function markNode(node) {
   node.style.backgroundColor = "rgba(" + VKBcolor + ",.3)";
@@ -162,87 +116,53 @@ function foundAuthor(jNode) {
       console.log("[GosVon Marking for VK] This is a comment.");
       markNode(pNode.parentElement)
       appendLinks(pNode, userID)
-      
-      // $(pNode).parent().css({
-      //     "background": "rgba(" + VKBcolor + ",.3)",
-      //     "border-left": "3px solid rgba(" + VKBcolor + ",.3)",
-      //     "padding-left": "3px"
-      // });
-
-      // $(pNode).append("<i><a target='_blank' href='https://gosvon.net/?usr=" + userID + "'>Комментарии</a> <a target='_blank' href='https://gosvon.net/photo.php?id=" + userID + "'>Карточка</a></i>");
-
     } else if (pNode.classList.contains('post_author')) {
       console.log("[GosVon Marking for VK] This is a post.");
       markNode(pNode.parentElement.parentElement)
       appendLinks(pNode, userID)
-
-      // $(pNode).parent().parent().css({
-      //     "background": "rgba(" + VKBcolor + ",.3)",
-      //     "border-left": "3px solid rgba(" + VKBcolor + ",.3)",
-      //     "padding-left": "3px"
-      // });
-
-      // $(pNode).append(" <i><a target='_blank' href='https://gosvon.net/?usr=" + userID + "'>Комментарии</a> <a target='_blank' href='https://gosvon.net/photo.php?id=" + userID + "'>Карточка</a></i>");
     }
   }
 }
 
 function foundAuthorCM(jNode) {
-  var userID = jNode.attr('href').substr(1);
+  var userID = jNode.getAttribute('href').substr(1);
   var foundID = arrayVKB.indexOf(userID);
   if (foundID > -1) {
     console.log("[GosVon Marking for VK] User found in VKB-db: " + userID);
-    var pNode = $(jNode).parent();
-    if (pNode[0].classList.contains('ReplyItem__header')) {
+    var pNode = jNode.parentElement;
+    if (pNode.classList.contains('ReplyItem__header')) {
       console.log("[GosVon Marking for VK] This is a comment.");
       markNode(pNode.parentElement)
       appendLinks(pNode, userID)
-      
-      // $(pNode).parent().css({
-      //     "background": "rgba(" + VKBcolor + ",.3)",
-      //     "border-left": "3px solid rgba(" + VKBcolor + ",.3)",
-      //     "padding-left": "3px"
-      // });
-      //   $(pNode).append(" <i><a target='_blank' href='https://gosvon.net/?usr=" + userID + "'>Комментарии</a> <a target='_blank' href='https://gosvon.net/photo.php?id=" + userID + "'>Карточка</a></i>");
     }
   }
 }
 
 function foundAuthorPM(jNode) {
-  var userID = jNode.attr('href').substr(1);
+  var userID = jNode.getAttribute('href').substr(1);
   if (userID.indexOf('?') >= 0) {
     userID = userID.split('?')[0];
   }
   var foundID = arrayVKB.indexOf(userID);
   if (foundID > -1) {
     console.log("[GosVon Marking for VK] User found in VKB-db: " + userID);
-    var pNode = $(jNode).parent();
-        //console.log('123');
-    if (pNode[0].classList.contains('wi_author')) {
-        //console.log('1234');
+    var pNode = jNode.parentElement;
+    if (pNode.classList.contains('wi_author')) {
       console.log("[GosVon Marking for VK] This is a post.");
-      $(pNode).parent().parent().css({
-          "background": "rgba(" + VKBcolor + ",.3)",
-          "border-left": "3px solid rgba(" + VKBcolor + ",.3)",
-          "padding-left": "3px"
-      });
-        $(pNode).append(" <i><a target='_blank' href='https://gosvon.net/?usr=" + userID + "'>Комментарии</a> <a target='_blank' href='https://gosvon.net/photo.php?id=" + userID + "'>Карточка</a></i>");
+      markNode(pNode.parentElement.parentElement)
+      appendLinks(pNode, userID)
     }
   }
 }
 
 function foundFan(jNode) {
-  var userID = jNode.attr('data-id');
+  var userID = jNode.getAttribute('data-id');
   var foundID = arrayVKB.indexOf(userID);
-  if (foundID > -1) {
+  if(foundID > -1) {
     console.log("[GosVon Marking for VK] User found in VKB-db: " + userID);
     console.log("[GosVon Marking for VK] This is a like.");
-    $(jNode).css({
-        "background": "rgba(" + VKBcolor + ",.3)",
-        "border-left": "3px solid rgba(" + VKBcolor + ",.3)",
-        "padding-left": "3px"
-    });
-      $(jNode).append(" <center><i><a target='_blank' href='https://gosvon.net/?usr=" + userID + "'>Комментарии</a> <a target='_blank' href='https://gosvon.net/photo.php?id=" + userID + "'>Карточка</a></i>");
+    markNode(jNode)
+    appendLinks(jNode, userID)
   }
 }
 
@@ -269,20 +189,6 @@ function foundProfile(jNode) {
       var infoelem = document.getElementsByClassName("page_name")[0];
       appendInfo(infoelem, userID, foundID)
     }
-
-    // console.log("[GosVon Marking for] User found in VKB-db: " + userID);
-    // var pNode = $(jNode).parent().parent();
-    // if (pNode[0].classList.contains('page_avatar_wrap')) {
-    //   console.log("[GosVon Marking for] This is a profile.");
-    //   $(pNode).parent().css({
-    //       "background": "rgba(" + VKBcolor + ",.3)"
-    //   });
-    //   var infoelem = document.getElementsByClassName("page_name")[0];
-    //   console.log(infoelem);
-    //   var newelem = document.createElement('span');
-    //    newelem.innerHTML = "Найдено в базе: #" + (foundID-1)/2 + " (" + arrayVKB[foundID] + ")<br/><i><a target='_blank' href='https://gosvon.net/?usr=" + userID + "'>Комментарии</a> <a target='_blank' href='https://gosvon.net/photo.php?id=" + userID + "'>Карточка</a></i>";
-    //   infoelem.after(newelem);
-    // }
   }
 }
 
@@ -291,21 +197,14 @@ function foundProfileM(jNode) {
   if (userID.indexOf('?') >= 0) {
     userID = userID.split('?')[0];
   }
-  var foundID = arrayVKB.indexOf(userID);
-  if (foundID == -1 && userID.substring(0,2) === 'id') {
-    userID = userID.substr(2);
-    foundID = arrayVKB.indexOf(userID);
-  }
+  var foundID = checkID(userID)
   if (foundID > -1) {
     console.log("[GosVon Marking for VK] User found in VKB-db: " + userID);
-    var pNode = $(jNode).parent();
-    if (pNode[0].classList.contains('owner_panel')) {
+    var pNode = jNode.parentElement;
+    if (pNode.classList.contains('owner_panel')) {
       console.log("[GosVon Marking for VK] This is a profile.");
-      $(jNode).css({
-          "background": "rgba(" + VKBcolor + ",.3)",
-      });
-        $(jNode).append("Найдено в базе: #" + ((foundID-1)/2+1) + " (" + arrayVKB[foundID] + ")<br>");
-        $(jNode).append("<i><a target='_blank' href='https://gosvon.net/?usr=" + userID + "'>Комментарии</a> <a target='_blank' href='https://gosvon.net/photo.php?id=" + userID + "'>Карточка</a></i>");
+      jNode.parentElement.style.background = "rgba(" + VKBcolor + ",.3)";
+      appendInfo(jNode, userID, foundID)
     }
   }
 }
@@ -314,60 +213,35 @@ function waitForKeyElements(selectorTxt, actionFunction, bWaitOnce, iframeSelect
   var targetNodes, btargetsFound;
   if (typeof iframeSelector == "undefined") {
     targetNodes = document.querySelectorAll(selectorTxt);
-  }
-  //  else {
-  //   var frame = document.querySelector(iframeSelector);
-  //   if(frame) {
-  //     targetNodes = frame.contentWindow.document.querySelectorAll(selectorTxt);  
-  //   }
-  // }  
+  } else { // WTF? This code never used.
+    var frame = document.querySelector(iframeSelector);
+    if(frame) {
+      targetNodes = frame.contentWindow.document.querySelectorAll(selectorTxt);  
+    }
+  }  
   if (targetNodes && targetNodes.length > 0) {
     btargetsFound = true;
     targetNodes.forEach(function(node) {
-      var examined = node.dataset.vkbExamined;
+      var examined = node.dataset.vkbExamined; // Set flag to the node for single check 
       if(!examined) {
         node.dataset.vkbExamined = true;
         actionFunction(node)
       }
     })
-    // targetNodes.each(function() {
-    //   var jThis = $(this);
-    //   var alreadyFound = jThis.data('alreadyFound') || false;
-    //   if (!alreadyFound) {
-    //     var cancelFound = actionFunction(jThis);
-    //     if (cancelFound) btargetsFound = false;
-    //     else jThis.data('alreadyFound', true);
-    //   }
-    // });
   } else {
     btargetsFound = false;
   }
 
+  // Repeat the checking
   var key = selectorTxt.replace(/[^\w]/g, "_");
   var timer = timers[key]
-  if(bWaitOnce && timeControl) {
+  if(btargetsFound && bWaitOnce && timer) {
     clearInterval(timer);
     delete timers[key];    
-  } else if(btargetsFound && !timer) {
+  } else if(!timer) {
     timer = setInterval(function() {
       waitForKeyElements(selectorTxt, actionFunction, bWaitOnce, iframeSelector);
     }, 300);
     timers[key] = timer;
   }
-
-  // var controlObj = waitForKeyElements.controlObj || {};
-  // var controlKey = selectorTxt.replace(/[^\w]/g, "_");
-  // var timeControl = controlObj[controlKey];
-  // if (btargetsFound && bWaitOnce && timeControl) {
-  //   clearInterval(timeControl);
-  //   delete controlObj[controlKey];
-  // } else {
-  //   if (!timeControl) {
-  //     timeControl = setInterval(function() {
-  //       waitForKeyElements(selectorTxt, actionFunction, bWaitOnce, iframeSelector);
-  //     }, 300);
-  //     controlObj[controlKey] = timeControl;
-  //   }
-  // }
-  // waitForKeyElements.controlObj = controlObj;
 }
