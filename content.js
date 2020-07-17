@@ -16,7 +16,6 @@ var arrayVKB = [];
 var timers = {};
 const VKBcolor = '255,50,50';
 const expireTime = 3600 * 1000; // one hour to expire botlist cache
-const apiUrl = 'https://api.gosvon.net/marking2';
 
 // Start!
 getList(function(items) {
@@ -45,32 +44,25 @@ function parseResponse(response) {
 function getList(callback) {
   var now = new Date;
   chrome.storage.local.get(['updated', 'bots'], function(data) {
-    if(data && data.bots && data.updated && data.updated > now.getTime() + expireTime) { // botlist is stored and fresh
+    if(data && data.bots && data.updated && data.updated > now.getTime() - expireTime) { // botlist is stored and fresh
       callback(data.bots)
     } else {
       console.log('Requesting list')
       fetchList(callback)
-      // chrome.runtime.sendMessage({"type": "get_bot_list"})
     }
   })
 }
 
 // Send request to api and pass parsed botlist to the callback
 function fetchList(callback) {
-  fetch(apiUrl).then(function(response) {
-    if(response.ok) {
-      return response.text()
+  chrome.runtime.sendMessage({type: 'get_bot_list'}, function(text, err) {
+    if(err) {
+      console.log("[GosVon Marking for VK] List load error ", err)
     } else {
-      return Promise.reject(response.status)
+      var items = parseResponse(text)
+      storeData(items)
+      callback(items)
     }
-  })
-  .then(function(text) {
-    var items = parseResponse(text)
-    storeData(items)
-    callback(items)
-  })
-  .catch(function(err) {
-    console.log("[GosVon Marking for VK] List load error ", err)
   })
 }
 
