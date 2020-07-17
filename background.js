@@ -1,18 +1,20 @@
+
+const apiUrl = 'https://api.gosvon.net/marking2';
+
 chrome.runtime.onMessage.addListener(function(message, sender, callback) {
   if (message.type != 'get_bot_list') {
     return;
   }
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    var activeTab = tabs[0];
-
-    function process_response(response) {
-      if (response.ok) {
-        response.text().then(text => chrome.tabs.sendMessage(activeTab.id, {"type": "bot_list", "message": text}));
-      } else {
-        chrome.tabs.sendMessage(activeTab.id, {"type": "bot_list", "message": "", "error": response.status});
-      }
+  fetch(apiUrl).then(function(response) {
+    if(response.ok) {
+      return response.text()
+    } else {
+      return Promise.reject(response.status)
     }
-
-    fetch('https://api.gosvon.net/marking2').then(response => process_response(response));
+  }).then(function(text) {
+    callback(text)
+  }).catch(function(err) {
+    callback(null, err)
   })
+  return true; // need for async callback
 })
