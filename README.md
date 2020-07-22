@@ -8,4 +8,4 @@
 
 Создано при поддержке движения [Гражданское Общество](https://civsoc.net/).
  
-Репозиторий: https://github.com/itcivsocTEAM/gosvon
+Репозиторий: https://github.com/civsocit/gosvon
