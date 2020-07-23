@@ -7,6 +7,10 @@
     {
       "matches": ["*://vk.com/*", "*://m.vk.com/*"],
       "js": ["content.js"]
+    },
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["content_youtube.js"]
     }
   ],
   "background": {
@@ -20,6 +24,7 @@
   },
   "permissions": [
     "*://api.gosvon.net/*",
+    "*://raw.githubusercontent.com/FeignedAccomplice/YOUTUBOTS/*",
     "storage"
   ]
 }
