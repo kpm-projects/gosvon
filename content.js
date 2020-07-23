@@ -17,10 +17,10 @@ var timers = {};
 const VKBcolor = '255,50,50';
 const expireTime = 3600 * 1000; // one hour to expire botlist cache
 
-// Start!VK
+// Start!
 getList(function(items) {
   arrayVKB = items;
-  findAndMark();
+  findAndMark();  
 });
 
 // Save botlist to local storage
@@ -214,7 +214,7 @@ function waitForKeyElements(selectorTxt, actionFunction, bWaitOnce, iframeSelect
   if (targetNodes && targetNodes.length > 0) {
     btargetsFound = true;
     targetNodes.forEach(function(node) {
-      var examined = node.dataset.vkbExamined; // Set flag to the node for single check
+      var examined = node.dataset.vkbExamined; // Set flag to the node for single check 
       if(!examined) {
         node.dataset.vkbExamined = true;
         actionFunction(node)
