@@ -1,18 +1,19 @@
 var arrayYTB = [];
 var timers = {};
 const expireTime = 3600 * 1000; // one hour to expire botlist cache
-const VKBcolor = '255,50,50';
+const YTBcolor = '255,50,50';
 
 // Start!
 getList(function(items) {
   arrayYTB = items;
-  findAndMark();
+  findAndMark("a.comment-icon-container");  // for mobile version
+  findAndMark("a.ytd-comment-renderer#author-text");
 });
 
 function markNode(node) {
-  node.style.backgroundColor = "rgba(" + VKBcolor + ",.3)";
-  node.style.borderLeft = "3px solid rgba(" + VKBcolor + ",.3)";
-  node.style.paddingLeft = "3px"
+  node.parentElement.style.backgroundColor = "rgba(" + YTBcolor + ",.3)";
+  node.parentElement.style.borderLeft = "3px solid rgba(" + YTBcolor + ",.3)";
+  node.parentElement.style.paddingLeft = "3px"
 }
 
 function foundAuthor(node) {
@@ -20,13 +21,13 @@ function foundAuthor(node) {
   userId = node.getAttribute("href").match('.+channel/(.+)')[1];
   foundId = arrayYTB.indexOf(userId);
   if (foundId > -1) {
-    console.log("Bot userId found");
+    console.log("Bot found " + userId);
     markNode(node);
   }
 }
 
-function findAndMark() {
-  targetNodes = document.querySelectorAll("a.ytd-comment-renderer#author-text")
+function findAndMark(key) {
+  targetNodes = document.querySelectorAll(key)
 
   if (targetNodes && targetNodes.length > 0) {
     btargetsFound = true;
@@ -41,19 +42,14 @@ function findAndMark() {
     btargetsFound = false;
   }
 
-  // Repeat the checking
-  var key = "main";
+  // Repeat the checking. We must check periodically because the list of comments can be expanded.
   var timer = timers[key]
-  if(btargetsFound && timer) {
-    clearInterval(timer);
-    delete timers[key];
-  } else if(!timer) {
+  if(!timer) {
     timer = setInterval(function() {
-      findAndMark();
-    }, 300);
+      findAndMark(key);
+    }, 3000);
     timers[key] = timer;
   }
-
 }
 
 // Read botlist from local storage and request it if not stored
