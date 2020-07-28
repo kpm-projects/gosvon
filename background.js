@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, callback) {
 
 const youtubeApiUrl = 'https://raw.githubusercontent.com/FeignedAccomplice/YOUTUBOTS/master/KB.CSV';
 
-chrome.runtime.onMessage.addListener((message, sender, callback) => {
+chrome.runtime.onMessage.addListener(function(message, sender, callback) {
   if (message.type != 'get_youtube_bot_list') {
     return;
   }
@@ -31,10 +31,7 @@ chrome.runtime.onMessage.addListener((message, sender, callback) => {
     } else {
       return Promise.reject(response.status)
     }
-  .then(
-    callback,
-    (err) => callback(null, err),
-  );
+  }).then(function(text) {
     callback(text)
   }).catch(function(err) {
     callback(null, err)
