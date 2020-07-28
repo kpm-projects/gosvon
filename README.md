@@ -10,7 +10,7 @@
 
 Пример работы плагина на сайте YouTube:
 
-![Screenshot](youtube_example.png)!
+![Screenshot](youtube_example.png)
 
 Создано при поддержке движения [Гражданское Общество](https://civsoc.net/).
  
