@@ -1,7 +1,7 @@
 const apiUrl = 'https://api.gosvon.net/marking2';
 
 chrome.runtime.onMessage.addListener(function (message, sender, callback) {
-    if (message.type != 'get_bot_list') {
+    if (message.type !== 'get_bot_list') {
         return;
     }
     fetch(apiUrl).then(function (response) {
